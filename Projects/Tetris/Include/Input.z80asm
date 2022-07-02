@@ -1,0 +1,224 @@
+CheckKeys:
+  push af
+  push ix
+  push de
+
+  ld ix, 0x0e002
+  ld h, (ix)
+  ld l, (ix + 1)
+
+  ld a, 0x00fe
+  in a, (0x00fe)
+  and 2
+  jp z, LeftPressed
+
+  ld a, 0x00fe
+  in a, (0x00fe)
+  and 4
+  jp z, RightPressed
+
+  ld a, 0x00bf
+  in a, (0x00fe)
+  and 4
+  jp z, UpPressed
+
+  ld a, 0x07f
+  in a, (0x00fe)
+  and 4
+  jp z, DownPressed
+
+EndKeys:
+  pop de
+  pop ix
+  pop af
+  ret
+
+LeftPressed:
+  ld a, 1
+  ld (0xe004), a
+
+  ld a, 1
+  call CheckBlock
+
+  cp a, 1
+  jp z, EndKeys
+
+  ld a, (0xe003)
+  dec a
+  ld (0xe003), a
+
+  jp EndKeys
+
+RightPressed:
+  ld a, 0
+  ld (0xe004), a
+
+  ld a, 2
+  call CheckBlock
+
+  cp a, 1
+  jp z, EndKeys
+
+  ld a, (0xe003)
+  inc a
+  ld (0xe003), a
+
+  jp EndKeys
+
+UpPressed:
+  ld a, 3
+  ld (0xe004), a
+
+  ld a, 3
+  call CheckBlock
+
+  cp a, 1
+  jp z, EndKeys
+
+  ld a, (0xe002)
+  dec a
+  ld (0xe002), a
+
+  jp EndKeys
+
+DownPressed:
+  ld a, 2
+  ld (0xe004), a
+  
+  ld a, 0
+  call CheckBlock
+
+  cp a, 1
+  jp z, EndKeys
+
+  ld a, (0xe002)
+  inc a
+  ld (0xe002), a
+
+  jp EndKeys
+
+CheckBlock:
+  cp a, 0
+  jp z, BlockDown
+
+  cp a, 2
+  jp z, BlockRight
+
+  cp a, 1
+  jp z, BlockLeft
+
+  cp a, 3
+  jp z, BlockUp
+
+BlockOver:
+  ret
+
+BlockRight:
+  ld b, 0
+  ld c, 32
+  ld d, h
+  ld e, l
+
+  ld a, d
+  cp a, 22
+
+  jp z, DontAddRight
+  inc d
+
+DontAddRight:
+  call Multiply
+
+  ld hl, MazeBlocks
+  
+  add hl, bc
+  ld d, 0
+  add hl, de
+
+  inc hl
+
+  ld a, (hl)
+  cp a, 1
+
+  jp z, Blocked
+
+  ld a, 0
+  jp BlockOver
+BlockLeft:
+  ld b, 0
+  ld c, 32
+  ld d, h
+  ld e, l
+
+  ld a, d
+  cp a, 22
+
+  jp z, DontAdd
+  inc d
+
+DontAdd:
+  call Multiply
+
+  ld hl, MazeBlocks
+  
+  add hl, bc
+  ld d, 0
+  add hl, de
+
+  dec hl
+
+  ld a, (hl)
+  cp a, 1
+
+  jp z, Blocked
+
+  ld a, 0
+  jp BlockOver
+
+BlockUp:
+  ld b, 0
+  ld c, 32
+  ld d, h
+  ld e, l
+
+  call Multiply
+  ld hl, MazeBlocks
+  
+  add hl, bc
+  ld d, 0
+  add hl, de
+
+  ld a, (hl)
+  and a
+
+  jp nz, Blocked
+
+  ld a, 0
+  jp BlockOver
+
+BlockDown:
+  ld b, 0
+  ld c, 32
+  ld d, h
+  ld e, l
+
+  inc d
+  inc d
+
+  call Multiply
+  ld hl, MazeBlocks
+  
+  add hl, bc
+  ld d, 0
+  add hl, de
+
+  ld a, (hl)
+  and a
+
+  jp nz, Blocked
+
+  ld a, 0
+  jp BlockOver
+
+Blocked:
+  ld a, 1
+  jp BlockOver

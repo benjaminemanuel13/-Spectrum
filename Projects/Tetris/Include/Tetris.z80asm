@@ -1,0 +1,81 @@
+ShowPacman:
+  push hl
+  push iy
+  push de
+  push af
+  push bc
+  push ix
+
+  ld hl, Smile
+  ld ix, 0x0e002
+  ld d, (ix)
+  ld e, (ix + 1)
+  add hl, de
+
+  cp a, 0
+  jp z, HidePacman
+
+  ld a, (0xe004)
+  cp a, 3
+  call z, ShowUp
+
+  cp a, 2
+  call z, ShowDown
+
+  cp a, 1
+  call z, ShowLeft
+
+  cp a, 0
+  call z, ShowRight
+AfterClear:
+  ld b, 8
+
+  jp StartPacman
+
+HidePacman:
+  ld iy, PacmanEmpty
+  jp AfterClear
+
+ShowRight:
+  ld iy, PacmanRight
+  ret
+
+ShowLeft:
+  ld iy, PacmanLeft
+  ret
+
+ShowUp:
+  ld iy, PacmanUp
+  ret
+
+ShowDown:
+  ld iy, PacmanDown
+  ret
+
+StartPacman:
+  ld a, (iy)
+  ld (hl), a
+
+  inc iy
+
+  ld d, 0
+  ld e, 32
+  add hl, de
+
+  dec b
+  ld a, b
+  and a
+  
+  jp z, FinishPacman
+
+  jp StartPacman
+
+FinishPacman:
+  pop ix
+  pop bc
+  pop af
+  pop de
+  pop iy
+  pop hl
+  
+  ret

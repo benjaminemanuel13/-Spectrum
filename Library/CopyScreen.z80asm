@@ -1,0 +1,124 @@
+FillScreen:
+  push bc
+  push de
+  push hl
+  push ix
+  push iy
+  push af
+
+  ld b, 8
+  ld c, 0
+  ld d, 0
+  ld e, 0
+  ld hl, 0x4000
+  ld iy, Smile
+LastLoop:
+  inc c
+  ld a, c
+
+  cp a, 1
+  jp z, Set1
+
+  cp a, 2
+  jp z, Set2
+
+  cp a, 3
+  jp z, Set3  
+
+  pop af
+  pop iy
+  pop ix
+  pop hl
+  pop de
+  pop bc
+
+  ret
+Set1:
+  push bc
+  ld hl, 0x4000
+  call MainLoop
+  pop bc
+  jp LastLoop
+Set2:
+  push bc
+  ld hl, 0x4800
+  call MainLoop
+  pop bc
+  jp LastLoop
+Set3:
+  push bc
+  ld hl, 0x5000
+  call MainLoop
+  pop bc
+  jp LastLoop
+
+MainLoop:
+  ld d, 0
+  ld e, 0
+  call OuterLoop
+
+  push de
+  push af
+
+  ld d, h
+  ld e, l
+
+  ld hl, 0x08F0 - 16
+
+  call Subtract
+
+  pop af
+  pop de
+
+  djnz MainLoop
+
+  ret
+OuterLoop:
+  ld d, 0
+
+  ld a, e
+  cp a, 8
+  ret z
+
+  inc e  
+
+  push bc
+  push de
+  push hl
+InnerLoop:
+  ld d, h
+  ld e, l  
+
+  ld (0xe000), iy
+  ld hl, (0xe000) 
+
+  ld b, 0
+StartPrint:
+  ld a, b
+  cp a, 31
+  jp z, NewLine
+
+  ldi
+  inc b
+
+  jp StartPrint
+
+NewLine:
+  pop hl
+  pop de
+  pop bc
+
+  push de
+  ld de, 32
+  add hl, de
+  add iy, de
+  pop de
+
+  inc d
+
+  push de
+  ld de, 256 - 32
+  add hl, de
+  pop de
+
+  jp OuterLoop

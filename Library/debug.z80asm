@@ -1,0 +1,7 @@
+BlueBlock:
+    push ix
+    ld ix, 0x5aFF
+    ld (ix), 0x0405
+    pop ix
+
+    ret

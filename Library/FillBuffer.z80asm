@@ -1,0 +1,30 @@
+//BUFFER
+FillBuffer:
+  ld de, Smile + 0x1800 
+  ld hl, Smile
+
+StartFill:
+  ld (hl), 0x00
+  inc hl
+
+  jp IxCompare
+
+Return:
+  ret
+
+IxCompare:
+  ld a, d
+  cp a, h
+  jp z, IxCompare2
+
+  jp StartFill
+
+  IxCompare2:
+  ld a,e
+  cp a,l
+  jp z, AreEqual
+
+  jp StartFill
+
+AreEqual:
+  jp Return

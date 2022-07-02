@@ -1,0 +1,2 @@
+Pacman,C:\$Spectrum\Projects\Pacman\,Pacman.proj
+Tetris,C:\$Spectrum\Projects\Tetris\,Tetris.proj

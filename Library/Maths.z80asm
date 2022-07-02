@@ -1,0 +1,47 @@
+//Maths Routines
+
+Subtract:
+  ld a, d
+  sub a, h
+
+  jp c, Carry
+  ld h, a  
+
+  ld a, e
+  sub a, l
+
+  ld l, a
+
+  ret
+Carry:
+  ld h, a
+  ld a, e
+  sub a, l
+  dec a
+
+  ld l, a
+  ret
+
+Multiply:
+  push af
+  push hl
+
+  ld hl, 0
+  ld a, d
+StartMul:
+  dec a
+  and a
+
+  jp z, Finished
+
+  add hl, bc
+
+  jp StartMul
+Finished:
+  ld b, h
+  ld c, l
+
+  pop hl
+  pop af
+
+  ret
